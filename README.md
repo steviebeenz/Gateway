@@ -1,2 +1,3 @@
 # Gateway
-redis based queue plugin
+redis based queue plugin 
+(not finished yet)
