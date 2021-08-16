@@ -1,0 +1,4 @@
+name: Gateway
+version: ${project.version}
+main: io.github.zowpy.queue.QueuePlugin
+authors: [ Zowpy ]

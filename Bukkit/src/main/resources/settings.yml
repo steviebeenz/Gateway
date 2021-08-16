@@ -1,0 +1,22 @@
+#
+# Gateway made by Zowpy
+#
+
+redis:
+  host: "gateway"
+  port: 6379
+  auth:
+    enabled: true
+    password: "admin"
+
+
+server-name: "Lobby"
+server-group: "HUB"
+# Dont touch this!
+server-uuid: "null"
+
+# Make sure this is the same in all servers
+server-groups:
+  - "EU"
+  - "NA"
+  - "HUB"
