@@ -106,7 +106,7 @@ public class SharedQueueSubscriber extends JedisSubscriber {
                 }
 
                 queuePlayer.setQueue(queue);
-                queuePlayer.setServer(sharedQueue.getSharedEmerald().getServerManager().getByPlayer(uuid));
+                queuePlayer.setServer(sharedQueue.getSharedEmerald().getServerManager().getByUUID(UUID.fromString(object2.get("server").getAsString())));
                 queuePlayer.setRank(sharedQueue.getRankManager().getByName(object2.get("rank").getAsString()));
                 queuePlayers.add(queuePlayer);
             }
@@ -131,7 +131,7 @@ public class SharedQueueSubscriber extends JedisSubscriber {
         QueuePlayer queuePlayer = new QueuePlayer(uuid);
         queuePlayer.setQueue(queue);
         queuePlayer.setRank(sharedQueue.getRankManager().getByName(object.get("rank").getAsString()));
-        queuePlayer.setServer(sharedQueue.getSharedEmerald().getServerManager().getByPlayer(uuid));
+        queuePlayer.setServer(sharedQueue.getSharedEmerald().getServerManager().getByUUID(UUID.fromString(object.get("server").getAsString())));
 
         Player player = Bukkit.getPlayer(uuid);
 
@@ -140,7 +140,7 @@ public class SharedQueueSubscriber extends JedisSubscriber {
         }
 
         queue.getPlayers().add(queuePlayer);
-        sharedQueue.getPlayerManager().getPlayers().add(queuePlayer);
+        sharedQueue.getPlayerManager().getPlayers().put(uuid, queuePlayer);
     }
 
     /**
@@ -156,15 +156,15 @@ public class SharedQueueSubscriber extends JedisSubscriber {
 
         QueuePlayer queuePlayer = sharedQueue.getPlayerManager().getByUUID(uuid);
 
-        if (queuePlayer != null) {
-            queue.getPlayers().remove(queuePlayer);
-            sharedQueue.getPlayerManager().getPlayers().remove(queuePlayer);
-        }
-
         Player player = Bukkit.getPlayer(uuid);
 
         if (player != null) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', object.get("message").getAsString()));
+            player.sendMessage(ChatColor.RED + "You've left " + queue.getName() + " queue!");
+        }
+
+        if (queuePlayer != null) {
+            queue.getPlayers().remove(queuePlayer);
+            sharedQueue.getPlayerManager().getPlayers().remove(uuid);
         }
     }
 
@@ -189,7 +189,8 @@ public class SharedQueueSubscriber extends JedisSubscriber {
         BungeeUtil.sendPlayer(sharedQueue.getPlugin(), player, queue.getBungeeCordName());
 
         queue.getPlayers().remove(queuePlayer);
-        sharedQueue.getPlayerManager().getPlayers().remove(queuePlayer);
+        sharedQueue.getPlayerManager().getPlayers().remove(uuid);
+
     }
 
     /**

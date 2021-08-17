@@ -81,8 +81,6 @@ public class ServerManager {
                     System.out.println("test 1");
                     server.setTps(TPSUtility.round(Double.parseDouble(data.get("tps"))));
 
-                    System.out.println(server.getName() + " tps : " + server.getTps());
-
                     EmeraldGroup group = emerald.getGroupManager().getByName(data.get("group"));
 
                     if (!group.getServers().contains(server)) {

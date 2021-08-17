@@ -13,10 +13,14 @@ import lombok.Setter;
  * Project: Gateway
  */
 
-@Getter @Setter @AllArgsConstructor
+@Getter @Setter
 public class QueueRank {
 
     private String name, permission;
     private int priority;
     private boolean isDefault;
+
+    public QueueRank(String name) {
+        this.name = name;
+    }
 }

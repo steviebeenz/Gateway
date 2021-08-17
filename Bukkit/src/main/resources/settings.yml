@@ -20,3 +20,10 @@ server-groups:
   - "EU"
   - "NA"
   - "HUB"
+
+queues:
+  practice:
+    paused: false
+    ip: 34.88.67.102
+    port: 25500
+    bungee: "practice"

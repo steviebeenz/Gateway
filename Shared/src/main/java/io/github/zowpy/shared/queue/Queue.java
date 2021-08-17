@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 /**
@@ -58,17 +57,16 @@ public class Queue {
     public int getPosition(QueuePlayer player) {
         if (getPlayers().isEmpty() || !getPlayers().contains(player)) return 0;
 
-        PriorityQueue<QueuePlayer> players = new PriorityQueue<>(getPlayers());
+        PriorityQueue<QueuePlayer> players1 = new PriorityQueue<>(getPlayers());
 
         int pos = 0;
-        for (int i = 0; i < players.size(); i++) {
-            QueuePlayer queuePlayer = players.poll();
-            if (queuePlayer.getUuid().equals(player.getUuid())) {
-                pos = i;
+        for (QueuePlayer player1 : players1) {
+            pos++;
+            if (player1.getUuid().equals(player.getUuid())) {
                 break;
             }
         }
 
-        return pos + 1;
+        return pos;
     }
 }

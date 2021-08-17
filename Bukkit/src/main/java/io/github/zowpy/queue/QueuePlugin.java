@@ -7,10 +7,17 @@ import io.github.zowpy.emerald.shared.server.ServerProperties;
 import io.github.zowpy.emerald.shared.server.ServerStatus;
 import io.github.zowpy.emerald.shared.util.TPSUtility;
 import io.github.zowpy.jedisapi.redis.RedisCredentials;
+import io.github.zowpy.queue.command.JoinQueueCommand;
+import io.github.zowpy.queue.command.LeaveQueueCommand;
+import io.github.zowpy.queue.task.QueueTask;
 import io.github.zowpy.queue.util.ConfigFile;
 import io.github.zowpy.queue.util.IPUtil;
+import io.github.zowpy.shared.SharedQueue;
+import io.github.zowpy.shared.queue.Queue;
+import io.github.zowpy.shared.queue.QueueRank;
 import lombok.Getter;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.Jedis;
@@ -25,17 +32,21 @@ public final class QueuePlugin extends JavaPlugin {
     private static QueuePlugin instance;
 
     private ConfigFile settingsFile;
+    private ConfigFile ranksFile;
 
     private Jedis jedis;
 
     private SharedEmerald sharedEmerald;
     private ServerProperties serverProperties;
 
+    private SharedQueue sharedQueue;
+
     @Override
     public void onEnable() {
         instance = this;
 
         settingsFile = new ConfigFile(this, "settings");
+        ranksFile = new ConfigFile(this, "ranks");
 
         serverProperties = new ServerProperties();
         serverProperties.setServerStatus(getServer().hasWhitelist() ? ServerStatus.WHITELISTED : ServerStatus.ONLINE);
@@ -62,7 +73,7 @@ public final class QueuePlugin extends JavaPlugin {
         sharedEmerald = new SharedEmerald(uuid, new RedisCredentials(
                 settingsFile.getConfig().getString("redis.host"),
                 settingsFile.getConfig().getString("redis.auth.password"),
-                "EMERALD:BUKKIT",
+                "GATEWAY:BUKKIT",
                 settingsFile.getConfig().getInt("redis.port"),
                 settingsFile.getConfig().getBoolean("redis.auth.enabled")
         ));
@@ -79,8 +90,6 @@ public final class QueuePlugin extends JavaPlugin {
 
         sharedEmerald.getServerManager().updateServers();
 
-
-
         jedis = sharedEmerald.getJedisAPI().getJedisHandler().getJedisPool().getResource();
 
         JsonObject object = new JsonObject();
@@ -88,12 +97,50 @@ public final class QueuePlugin extends JavaPlugin {
 
         sharedEmerald.getJedisAPI().getJedisHandler().write("start###"+ object.toString());
 
+        sharedQueue = new SharedQueue(this, sharedEmerald);
+        loadQueues(settingsFile.getConfig().getConfigurationSection("queues"));
+        loadRanks(ranksFile.getConfig().getConfigurationSection("ranks"));
+
+        new QueueTask().start();
+
+        getCommand("joinqueue").setExecutor(new JoinQueueCommand());
+        getCommand("leavequeue").setExecutor(new LeaveQueueCommand());
+
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
 
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        sharedEmerald.getServerManager().setOffline(sharedEmerald.getServerManager().getByUUID(sharedEmerald.getUuid()), jedis);
+
+        instance = null;
+    }
+
+    private void loadRanks(ConfigurationSection section) {
+        if (section == null || section.getKeys(false) == null) return;
+
+        for (String rank : section.getKeys(false)) {
+            ConfigurationSection sec = section.getConfigurationSection(rank);
+            QueueRank queueRank = new QueueRank(rank);
+            queueRank.setDefault(sec.get("default") != null && sec.getBoolean("default"));
+            queueRank.setPermission(sec.get("permission") == null ? "" : sec.getString("permission"));
+            queueRank.setPriority(sec.getInt("priority", 0));
+            sharedQueue.getRankManager().getRanks().add(queueRank);
+        }
+    }
+
+    private void loadQueues(ConfigurationSection section) {
+        if (section == null || section.getKeys(false) == null) return;
+
+        for (String queue : section.getKeys(false)) {
+            ConfigurationSection sec = section.getConfigurationSection(queue);
+            Queue queue1 = new Queue(queue);
+            queue1.setPaused(sec.getBoolean("paused"));
+            queue1.setServer(sharedEmerald.getServerManager().getByConnection(sec.getString("ip"), sec.getInt("port")));
+            queue1.setBungeeCordName(sec.getString("bungee"));
+            sharedQueue.getQueueManager().getQueues().add(queue1);
+        }
     }
 }

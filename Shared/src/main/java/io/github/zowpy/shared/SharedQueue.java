@@ -31,7 +31,7 @@ public class SharedQueue {
         this.plugin = plugin;
         this.sharedEmerald = sharedEmerald;
 
-        this.queueManager = new QueueManager();
+        this.queueManager = new QueueManager(this);
         this.playerManager = new PlayerManager();
         this.rankManager = new RankManager();
 

@@ -2,3 +2,16 @@ name: Gateway
 version: ${project.version}
 main: io.github.zowpy.queue.QueuePlugin
 authors: [ Zowpy ]
+commands:
+  joinqueue:
+    aliases:
+      - jq
+      - jqueue
+      - joinq
+    description: "Join a queue"
+  leavequeue:
+    aliases:
+      - lq
+      - lqueue
+      - leaveq
+    description: "Leave your current queue"

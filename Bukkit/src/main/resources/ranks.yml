@@ -1,0 +1,17 @@
+#
+# Gateway made by Zowpy
+#
+
+ranks:
+  default:
+    priority: 0
+    default: true
+  vip:
+    priority: 20
+    permission: gateway.ranks.vip
+  mvp:
+    priority: 40
+    permission: gateway.ranks.mvp
+  staff:
+    priority: 100
+    permission: gateway.ranks.staff

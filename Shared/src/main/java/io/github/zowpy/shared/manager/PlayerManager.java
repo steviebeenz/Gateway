@@ -3,8 +3,7 @@ package io.github.zowpy.shared.manager;
 import io.github.zowpy.shared.queue.QueuePlayer;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -19,7 +18,7 @@ import java.util.UUID;
 @Getter
 public class PlayerManager {
 
-    private final List<QueuePlayer> players = new ArrayList<>();
+    private final HashMap<UUID, QueuePlayer> players = new HashMap<>();
 
     /**
      * Returns a player matching that uuid
@@ -29,7 +28,6 @@ public class PlayerManager {
      */
 
     public QueuePlayer getByUUID(UUID uuid) {
-        return players.stream()
-                .filter(queuePlayer -> queuePlayer.getUuid().equals(uuid)).findFirst().orElse(null);
+        return players.get(uuid);
     }
 }
