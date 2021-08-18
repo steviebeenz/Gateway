@@ -40,13 +40,15 @@ public class QueueTask extends Thread {
                 });
 
                 if (queue.isPaused()) continue;
+                if (queue.getServer() == null) continue;
                 if (queue.getServer().getOnlinePlayers().size() >= queue.getServer().getMaxPlayers()) continue;
 
 
                 QueuePlayer queuePlayer = queue.getPlayers().peek();
 
                 JsonChain jc = new JsonChain()
-                        .addProperty("uuid", queuePlayer.getUuid().toString());
+                        .addProperty("uuid", queuePlayer.getUuid().toString())
+                        .addProperty("delay", true);
 
                 QueuePlugin.getInstance().getSharedEmerald().getJedisAPI().getJedisHandler().write("send###" + jc.getAsJsonObject().toString());
             }
