@@ -159,13 +159,12 @@ public class SharedQueueSubscriber extends JedisSubscriber {
         Player player = Bukkit.getPlayer(uuid);
 
         if (player != null) {
-            player.sendMessage(ChatColor.RED + "You've left " + queue.getName() + " queue!");
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', object.get("message").getAsString()));
         }
 
-        if (queuePlayer != null) {
-            queue.getPlayers().remove(queuePlayer);
-            sharedQueue.getPlayerManager().getPlayers().remove(uuid);
-        }
+        queue.getPlayers().remove(queuePlayer);
+        sharedQueue.getPlayerManager().getPlayers().remove(uuid, queuePlayer);
+
     }
 
     /**

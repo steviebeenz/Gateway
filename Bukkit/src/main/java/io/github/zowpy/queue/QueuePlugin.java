@@ -10,6 +10,7 @@ import io.github.zowpy.jedisapi.redis.RedisCredentials;
 import io.github.zowpy.queue.command.JoinQueueCommand;
 import io.github.zowpy.queue.command.LeaveQueueCommand;
 import io.github.zowpy.queue.task.QueueTask;
+import io.github.zowpy.queue.task.ServerUpdateTask;
 import io.github.zowpy.queue.util.ConfigFile;
 import io.github.zowpy.queue.util.IPUtil;
 import io.github.zowpy.shared.SharedQueue;
@@ -33,6 +34,7 @@ public final class QueuePlugin extends JavaPlugin {
 
     private ConfigFile settingsFile;
     private ConfigFile ranksFile;
+    private ConfigFile langFile;
 
     private Jedis jedis;
 
@@ -47,6 +49,7 @@ public final class QueuePlugin extends JavaPlugin {
 
         settingsFile = new ConfigFile(this, "settings");
         ranksFile = new ConfigFile(this, "ranks");
+        langFile = new ConfigFile(this, "lang");
 
         serverProperties = new ServerProperties();
         serverProperties.setServerStatus(getServer().hasWhitelist() ? ServerStatus.WHITELISTED : ServerStatus.ONLINE);
@@ -88,8 +91,6 @@ public final class QueuePlugin extends JavaPlugin {
         /*  Create the current server to redis cache  */
         sharedEmerald.getServerManager().createServer();
 
-        sharedEmerald.getServerManager().updateServers();
-
         jedis = sharedEmerald.getJedisAPI().getJedisHandler().getJedisPool().getResource();
 
         JsonObject object = new JsonObject();
@@ -101,6 +102,7 @@ public final class QueuePlugin extends JavaPlugin {
         loadQueues(settingsFile.getConfig().getConfigurationSection("queues"));
         loadRanks(ranksFile.getConfig().getConfigurationSection("ranks"));
 
+        new ServerUpdateTask();
         new QueueTask().start();
 
         getCommand("joinqueue").setExecutor(new JoinQueueCommand());
@@ -141,6 +143,7 @@ public final class QueuePlugin extends JavaPlugin {
             queue1.setServer(sharedEmerald.getServerManager().getByConnection(sec.getString("ip"), sec.getInt("port")));
             queue1.setBungeeCordName(sec.getString("bungee"));
             sharedQueue.getQueueManager().getQueues().add(queue1);
+            System.out.println(queue1.getServer().getStatus().name());
         }
     }
 }

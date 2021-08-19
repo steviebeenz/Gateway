@@ -47,7 +47,6 @@ public class ServerManager {
                 jedis.auth(emerald.getJedisAPI().getJedisHandler().getCredentials().getPassword());
             }
 
-
             for (String key : jedis.keys("server*")) {
                 if (key.startsWith("server-")) {
                     UUID uuid = UUID.fromString(key.replace("server-", ""));
@@ -78,7 +77,6 @@ public class ServerManager {
                     server.setWhitelistedPlayers(whitelistedPlayers);
                     server.setMaxPlayers(Integer.parseInt(data.get("maxPlayers")));
                     server.setGroup(emerald.getGroupManager().getByName(data.get("group")));
-                    System.out.println("test 1");
                     server.setTps(TPSUtility.round(Double.parseDouble(data.get("tps"))));
 
                     EmeraldGroup group = emerald.getGroupManager().getByName(data.get("group"));

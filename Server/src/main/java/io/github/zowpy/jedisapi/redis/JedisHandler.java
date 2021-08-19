@@ -1,11 +1,17 @@
 package io.github.zowpy.jedisapi.redis;
 
+import com.google.gson.JsonParser;
 import io.github.zowpy.jedisapi.JedisAPI;
 import io.github.zowpy.jedisapi.redis.subscription.impl.JedisListener;
 import lombok.Getter;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * This Project is property of Zowpy © 2021
@@ -46,8 +52,18 @@ public class JedisHandler {
     }
 
     public void write(String message) {
-        if (credentials.isAuth()) publishJedis.auth(credentials.getPassword());
-        publishJedis.publish(credentials.getChannel(), message);
+        Jedis publish = null;
+        try {
+            publish = jedisPool.getResource();
+
+            if (credentials.isAuth()) publish.auth(credentials.getPassword());
+
+            publish.publish(credentials.getChannel(), message);
+        } finally {
+            if (publish != null) {
+                publish.close();
+            }
+        }
     }
 
 

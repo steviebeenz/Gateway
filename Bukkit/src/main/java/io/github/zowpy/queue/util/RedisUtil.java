@@ -3,6 +3,7 @@ package io.github.zowpy.queue.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.github.zowpy.queue.Locale;
 import io.github.zowpy.queue.QueuePlugin;
 import io.github.zowpy.shared.queue.Queue;
 import io.github.zowpy.shared.queue.QueuePlayer;
@@ -100,7 +101,7 @@ public class RedisUtil {
                 .addProperty("queue", queue.getName())
                 .addProperty("rank", rank == null ? "null" : rank.getName())
                 .addProperty("server", queuePlugin.getSharedEmerald().getUuid().toString())
-                .addProperty("message", "&aYou have been added to " + queue.getName());
+                .addProperty("message", Locale.JOIN_QUEUE.getMessage().replace("<queue>", queue.getName()));
 
         queuePlugin.getSharedEmerald().getJedisAPI().getJedisHandler().write("addPlayer###" + jc.getAsJsonObject().toString());
     }
@@ -115,7 +116,8 @@ public class RedisUtil {
     public static void removePlayer(UUID uuid, Queue queue) {
         JsonChain jc = new JsonChain()
                 .addProperty("uuid", uuid.toString())
-                .addProperty("queue", queue.getName());
+                .addProperty("queue", queue.getName())
+                .addProperty("message", Locale.LEAVE_QUEUE.getMessage().replace("<queue>", queue.getName()));
 
         queuePlugin.getSharedEmerald().getJedisAPI().getJedisHandler().write("removePlayer###" + jc.getAsJsonObject().toString());
     }

@@ -10,6 +10,8 @@ redis:
     password: "admin"
 
 
+queue-interval: 3 # in seconds
+
 server-name: "Lobby"
 server-group: "HUB"
 # Dont touch this!

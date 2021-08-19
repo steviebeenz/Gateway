@@ -1,5 +1,7 @@
 package io.github.zowpy.queue.task;
 
+import io.github.zowpy.emerald.shared.server.ServerStatus;
+import io.github.zowpy.queue.Locale;
 import io.github.zowpy.queue.QueuePlugin;
 import io.github.zowpy.queue.util.JsonChain;
 import io.github.zowpy.shared.queue.Queue;
@@ -7,9 +9,6 @@ import io.github.zowpy.shared.queue.QueuePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import javax.swing.plaf.synth.SynthRadioButtonMenuItemUI;
 
 /**
  * This Project is property of Zowpy © 2021
@@ -35,17 +34,22 @@ public class QueueTask extends Thread {
                     Player player = Bukkit.getPlayer(queuePlayer1.getUuid());
 
                     if (player != null) {
-                        player.sendMessage(ChatColor.AQUA + "You are pos #" + queue.getPosition(queuePlayer1) + " out of #" + queue.getPlayers().size());
+                        for (String s : Locale.QUEUE_REMINDER.getMessageList()) {
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', s.replace("<pos>", queue.getPosition(queuePlayer1) + "")
+                            .replace("<total>", queue.getPlayers().size() + "")
+                            .replace("<queue>", queue.getName())));
+                        }
                     }
                 });
 
                 if (queue.isPaused()) continue;
                 if (queue.getServer() == null) continue;
+                if (queue.getServer().getStatus() == ServerStatus.OFFLINE) continue;
                 if (queue.getServer().getOnlinePlayers().size() >= queue.getServer().getMaxPlayers()) continue;
 
-
                 QueuePlayer queuePlayer = queue.getPlayers().peek();
-
+               // if (queue.getServer().getStatus() == ServerStatus.WHITELISTED && !queue.getServer().getWhitelistedPlayers().contains(queuePlayer.getUuid())) continue
+                
                 JsonChain jc = new JsonChain()
                         .addProperty("uuid", queuePlayer.getUuid().toString())
                         .addProperty("delay", true);
@@ -54,7 +58,7 @@ public class QueueTask extends Thread {
             }
 
             try {
-                Thread.sleep(3000L);
+                Thread.sleep(QueuePlugin.getInstance().getSettingsFile().getConfig().getInt("queue-interval", 3) * 1000L);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

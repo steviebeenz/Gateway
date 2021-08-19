@@ -1,0 +1,12 @@
+#
+# Gateway made by Zowpy
+#
+
+queue-reminder:
+  - " "
+  - "&eYou are in &6<queue> &equeue, you are &6<pos>#&e out of &6<total>#"
+  - "&eYou can purchase a rank for a higher priority!"
+  - " "
+
+join-queue: "&eYou have been added to &6<queue>"
+left-queue: "&eYou have been removed from &6<queue>"
