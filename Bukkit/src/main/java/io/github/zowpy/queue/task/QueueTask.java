@@ -30,17 +30,17 @@ public class QueueTask extends Thread {
                 if (queue.getPlayers().isEmpty()) continue;
 
 
-                queue.getPlayers().forEach(queuePlayer1 -> {
-                    Player player = Bukkit.getPlayer(queuePlayer1.getUuid());
+                for (QueuePlayer queuePlayer : queue.getPlayers()) {
+                    Player player = Bukkit.getPlayer(queuePlayer.getUuid());
 
                     if (player != null) {
                         for (String s : Locale.QUEUE_REMINDER.getMessageList()) {
-                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', s.replace("<pos>", queue.getPosition(queuePlayer1) + "")
-                            .replace("<total>", queue.getPlayers().size() + "")
-                            .replace("<queue>", queue.getName())));
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', s.replace("<pos>", queue.getPosition(queuePlayer) + "")
+                                    .replace("<total>", queue.getPlayers().size() + "")
+                                    .replace("<queue>", queue.getName())));
                         }
                     }
-                });
+                }
 
                 if (queue.isPaused()) continue;
                 if (queue.getServer() == null) continue;
