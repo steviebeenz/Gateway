@@ -10,6 +10,7 @@ import io.github.zowpy.emerald.shared.util.TPSUtility;
 import io.github.zowpy.jedisapi.redis.RedisCredentials;
 import io.github.zowpy.queue.command.JoinQueueCommand;
 import io.github.zowpy.queue.command.LeaveQueueCommand;
+import io.github.zowpy.queue.command.PauseQueueCommand;
 import io.github.zowpy.queue.task.QueueTask;
 import io.github.zowpy.queue.task.ServerUpdateTask;
 import io.github.zowpy.queue.util.ConfigFile;
@@ -112,6 +113,7 @@ public final class QueuePlugin extends JavaPlugin {
 
         getCommand("joinqueue").setExecutor(new JoinQueueCommand());
         getCommand("leavequeue").setExecutor(new LeaveQueueCommand());
+        getCommand("pause").setExecutor(new PauseQueueCommand());
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 

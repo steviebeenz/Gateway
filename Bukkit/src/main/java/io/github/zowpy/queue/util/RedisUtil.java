@@ -122,5 +122,17 @@ public class RedisUtil {
         queuePlugin.getSharedEmerald().getJedisAPI().getJedisHandler().write("removePlayer###" + jc.getAsJsonObject().toString());
     }
 
+    /**
+     * Pauses a specific queue
+     *
+     * @param queue queue to pause
+     */
+
+    public static void pauseQueue(Queue queue) {
+        JsonChain jc = new JsonChain().addProperty("queue", queue.getName());
+
+        queuePlugin.getSharedEmerald().getJedisAPI().getJedisHandler().write("togglePause###" + jc.getAsJsonObject().toString());
+    }
+
 
 }

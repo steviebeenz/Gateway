@@ -15,3 +15,10 @@ commands:
       - lqueue
       - leaveq
     description: "Leave your current queue"
+  pause:
+    aliases:
+      - pausequeue
+      - pq
+      - pauseq
+      - pqueue
+    description: "Pauses/Resumes a specific queue"

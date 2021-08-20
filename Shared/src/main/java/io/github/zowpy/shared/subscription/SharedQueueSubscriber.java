@@ -225,4 +225,19 @@ public class SharedQueueSubscriber extends JedisSubscriber {
         }
     }
 
+    /**
+     * Toggles a specific queue pause
+     *
+     * @param object data used to pause a queue
+     */
+
+    @IncomingMessage(payload = "togglePause")
+    public void togglePause(JsonObject object) {
+        Queue queue = sharedQueue.getQueueManager().getByName(object.get("queue").getAsString());
+
+        if (queue == null) return;
+
+        queue.setPaused(!queue.isPaused());
+    }
+
 }

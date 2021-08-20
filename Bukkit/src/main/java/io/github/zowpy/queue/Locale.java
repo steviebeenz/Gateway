@@ -22,6 +22,7 @@ public enum Locale {
 
     JOIN_QUEUE("&eYou have been added to &6<queue>", "join-queue"),
     LEAVE_QUEUE("&eYou have been removed from &6<queue>", "left-queue"),
+    PAUSE_QUEUE("&eYou have <toggle> &6<queue>", "pause-queue"),
 
     SEND_PLAYER("&eSending you to &6<queue>", "send-player");
 
