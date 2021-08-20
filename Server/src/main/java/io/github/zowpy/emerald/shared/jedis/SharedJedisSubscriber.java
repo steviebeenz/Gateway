@@ -77,7 +77,7 @@ public class SharedJedisSubscriber extends JedisSubscriber {
         EmeraldServer server = emerald.getServerManager().getByUUID(UUID.fromString(object.get("uuid").getAsString()));
 
         if (server != null) {
-            emerald.getServerManager().setOffline(server, emerald.getJedisAPI().getJedisHandler().getJedisPool().getResource());
+            emerald.getServerManager().setOffline(server);
 
         }
     }
