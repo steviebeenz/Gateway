@@ -3,6 +3,7 @@ package io.github.zowpy.queue;
 import com.google.gson.JsonObject;
 import io.github.zowpy.emerald.shared.SharedEmerald;
 import io.github.zowpy.emerald.shared.server.EmeraldGroup;
+import io.github.zowpy.emerald.shared.server.EmeraldServer;
 import io.github.zowpy.emerald.shared.server.ServerProperties;
 import io.github.zowpy.emerald.shared.server.ServerStatus;
 import io.github.zowpy.emerald.shared.util.TPSUtility;
@@ -91,7 +92,11 @@ public final class QueuePlugin extends JavaPlugin {
         /*  Create the current server to redis cache  */
         sharedEmerald.getServerManager().createServer();
 
+        sharedEmerald.getServerManager().updateServers();
+
         jedis = sharedEmerald.getJedisAPI().getJedisHandler().getJedisPool().getResource();
+
+        new ServerUpdateTask();
 
         JsonObject object = new JsonObject();
         object.addProperty("name", serverProperties.getName());
@@ -99,17 +104,16 @@ public final class QueuePlugin extends JavaPlugin {
         sharedEmerald.getJedisAPI().getJedisHandler().write("start###"+ object.toString());
 
         sharedQueue = new SharedQueue(this, sharedEmerald);
+
         loadQueues(settingsFile.getConfig().getConfigurationSection("queues"));
         loadRanks(ranksFile.getConfig().getConfigurationSection("ranks"));
 
-        new ServerUpdateTask();
         new QueueTask().start();
 
         getCommand("joinqueue").setExecutor(new JoinQueueCommand());
         getCommand("leavequeue").setExecutor(new LeaveQueueCommand());
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-
 
     }
 
@@ -143,7 +147,7 @@ public final class QueuePlugin extends JavaPlugin {
             queue1.setServer(sharedEmerald.getServerManager().getByConnection(sec.getString("ip"), sec.getInt("port")));
             queue1.setBungeeCordName(sec.getString("bungee"));
             sharedQueue.getQueueManager().getQueues().add(queue1);
-            System.out.println(queue1.getServer().getStatus().name());
+            System.out.println(queue1.getServer() == null);
         }
     }
 }

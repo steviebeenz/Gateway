@@ -47,8 +47,11 @@ public class JoinQueueCommand implements CommandExecutor {
                 return false;
             }
 
-            RedisUtil.addPlayer(player, queue);
-
+            if (QueuePlugin.getInstance().getSharedQueue().getQueueManager().canJoin(player.getUniqueId(), queue)) {
+                RedisUtil.addPlayer(player, queue);
+            }else {
+                player.sendMessage(ChatColor.RED + "You can't join this queue right now!");
+            }
 
 
         }else {

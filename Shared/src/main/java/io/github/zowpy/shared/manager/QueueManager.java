@@ -37,7 +37,7 @@ public class QueueManager {
      */
 
     public boolean canJoin(UUID uuid, Queue queue) {
-        return getByPlayer(uuid) == null && sharedQueue.getSharedEmerald().getServerManager().getByUUID(uuid) != queue.getServer()
+        return getByPlayer(uuid) == null && sharedQueue.getSharedEmerald().getServerManager().getByPlayer(uuid) != queue.getServer()
                 && queue.getServer().getStatus() == ServerStatus.ONLINE || queue.getServer().getStatus() == ServerStatus.WHITELISTED && queue.getServer().getWhitelistedPlayers().contains(uuid);
     }
 

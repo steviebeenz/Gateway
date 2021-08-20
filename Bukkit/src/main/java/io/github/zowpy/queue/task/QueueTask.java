@@ -49,12 +49,19 @@ public class QueueTask extends Thread {
 
                 QueuePlayer queuePlayer = queue.getPlayers().peek();
                // if (queue.getServer().getStatus() == ServerStatus.WHITELISTED && !queue.getServer().getWhitelistedPlayers().contains(queuePlayer.getUuid())) continue
-                
+
+                if (queuePlayer == null) continue;
+                if (queuePlayer.getServer().getUuid().equals(queue.getServer().getUuid())) {
+                    queue.getPlayers().remove(queuePlayer);
+                    continue;
+                }
+
                 JsonChain jc = new JsonChain()
                         .addProperty("uuid", queuePlayer.getUuid().toString())
                         .addProperty("delay", true);
 
                 QueuePlugin.getInstance().getSharedEmerald().getJedisAPI().getJedisHandler().write("send###" + jc.getAsJsonObject().toString());
+
             }
 
             try {

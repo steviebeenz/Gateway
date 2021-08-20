@@ -177,12 +177,15 @@ public class SharedQueueSubscriber extends JedisSubscriber {
     public void sendPlayer(JsonObject object) {
         UUID uuid = UUID.fromString(object.get("uuid").getAsString());
         QueuePlayer queuePlayer = sharedQueue.getPlayerManager().getByUUID(uuid);
+
+
+        if (queuePlayer == null) return;
+        if (queuePlayer.getQueue() == null) return;
+
         Queue queue = queuePlayer.getQueue();
         Player player = Bukkit.getPlayer(uuid);
 
         if (player == null) return;
-        if (queuePlayer == null) return;
-        if (queue == null) return;
 
         if (object.has("delay") && object.get("delay").getAsBoolean()) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(sharedQueue.getPlugin(), new Runnable() {
@@ -190,15 +193,15 @@ public class SharedQueueSubscriber extends JedisSubscriber {
                 public void run() {
                     player.sendMessage(ChatColor.GREEN + "Sending you to " + queuePlayer.getQueue().getBungeeCordName());
                     BungeeUtil.sendPlayer(sharedQueue.getPlugin(), player, queue.getBungeeCordName());
-                    queue.getPlayers().remove(queuePlayer);
+                    queue.getPlayers().removeIf(queuePlayer1 -> queuePlayer1.getUuid().equals(uuid));
                     sharedQueue.getPlayerManager().getPlayers().remove(uuid);
                 }
             }, 20*3L);
         }else {
             player.sendMessage(ChatColor.GREEN + "Sending you to " + queuePlayer.getQueue().getBungeeCordName());
             BungeeUtil.sendPlayer(sharedQueue.getPlugin(), player, queue.getBungeeCordName());
-            queue.getPlayers().remove(queuePlayer);
-            sharedQueue.getPlayerManager().getPlayers().remove(uuid);
+            queue.getPlayers().removeIf(queuePlayer1 -> queuePlayer1.getUuid().equals(uuid));
+            sharedQueue.getPlayerManager().getPlayers().remove(uuid, queuePlayer);
         }
 
 
