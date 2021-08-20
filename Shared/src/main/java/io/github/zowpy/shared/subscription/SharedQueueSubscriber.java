@@ -180,7 +180,10 @@ public class SharedQueueSubscriber extends JedisSubscriber {
 
 
         if (queuePlayer == null) return;
+        sharedQueue.getPlayerManager().getPlayers().remove(uuid, queuePlayer);
         if (queuePlayer.getQueue() == null) return;
+        queuePlayer.getQueue().getPlayers().removeIf(queuePlayer1 -> queuePlayer1.getUuid().equals(uuid));
+
 
         Queue queue = queuePlayer.getQueue();
         Player player = Bukkit.getPlayer(uuid);
@@ -193,15 +196,11 @@ public class SharedQueueSubscriber extends JedisSubscriber {
                 public void run() {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', object.get("message").getAsString()));
                     BungeeUtil.sendPlayer(sharedQueue.getPlugin(), player, queue.getBungeeCordName());
-                    queue.getPlayers().removeIf(queuePlayer1 -> queuePlayer1.getUuid().equals(uuid));
-                    sharedQueue.getPlayerManager().getPlayers().remove(uuid);
                 }
             }, 20*3L);
         }else {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', object.get("message").getAsString()));
             BungeeUtil.sendPlayer(sharedQueue.getPlugin(), player, queue.getBungeeCordName());
-            queue.getPlayers().removeIf(queuePlayer1 -> queuePlayer1.getUuid().equals(uuid));
-            sharedQueue.getPlayerManager().getPlayers().remove(uuid, queuePlayer);
         }
 
 
