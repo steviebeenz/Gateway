@@ -58,7 +58,8 @@ public class QueueTask extends Thread {
 
                 JsonChain jc = new JsonChain()
                         .addProperty("uuid", queuePlayer.getUuid().toString())
-                        .addProperty("delay", true);
+                        .addProperty("delay", true)
+                        .addProperty("message", Locale.SEND_PLAYER.getMessage().replace("<server>", queue.getBungeeCordName()));
 
                 QueuePlugin.getInstance().getSharedEmerald().getJedisAPI().getJedisHandler().write("send###" + jc.getAsJsonObject().toString());
 

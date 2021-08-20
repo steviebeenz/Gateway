@@ -24,7 +24,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class QueueManager {
 
-    private SharedQueue sharedQueue;
+    private final SharedQueue sharedQueue;
 
     private final List<Queue> queues = new ArrayList<>();
 

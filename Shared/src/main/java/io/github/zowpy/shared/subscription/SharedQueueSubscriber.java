@@ -191,14 +191,14 @@ public class SharedQueueSubscriber extends JedisSubscriber {
             Bukkit.getScheduler().runTaskLaterAsynchronously(sharedQueue.getPlugin(), new Runnable() {
                 @Override
                 public void run() {
-                    player.sendMessage(ChatColor.GREEN + "Sending you to " + queuePlayer.getQueue().getBungeeCordName());
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', object.get("message").getAsString()));
                     BungeeUtil.sendPlayer(sharedQueue.getPlugin(), player, queue.getBungeeCordName());
                     queue.getPlayers().removeIf(queuePlayer1 -> queuePlayer1.getUuid().equals(uuid));
                     sharedQueue.getPlayerManager().getPlayers().remove(uuid);
                 }
             }, 20*3L);
         }else {
-            player.sendMessage(ChatColor.GREEN + "Sending you to " + queuePlayer.getQueue().getBungeeCordName());
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', object.get("message").getAsString()));
             BungeeUtil.sendPlayer(sharedQueue.getPlugin(), player, queue.getBungeeCordName());
             queue.getPlayers().removeIf(queuePlayer1 -> queuePlayer1.getUuid().equals(uuid));
             sharedQueue.getPlayerManager().getPlayers().remove(uuid, queuePlayer);

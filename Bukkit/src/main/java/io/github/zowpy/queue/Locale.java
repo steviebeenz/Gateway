@@ -21,7 +21,9 @@ public enum Locale {
     QUEUE_REMINDER(Arrays.asList(" ", "&eYou are in &6<queue> &equeue, you are &6<pos>#&e out of &6<total>#", "&eYou can purchase a rank for a higher priority!", " "), "queue-reminder"),
 
     JOIN_QUEUE("&eYou have been added to &6<queue>", "join-queue"),
-    LEAVE_QUEUE("&eYou have been removed from &6<queue>", "left-queue");
+    LEAVE_QUEUE("&eYou have been removed from &6<queue>", "left-queue"),
+
+    SEND_PLAYER("&eSending you to &6<queue>", "send-player");
 
 
     private String message, path;
