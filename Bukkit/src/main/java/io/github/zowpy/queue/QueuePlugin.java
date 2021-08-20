@@ -119,7 +119,7 @@ public final class QueuePlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        sharedEmerald.getServerManager().setOffline(sharedEmerald.getServerManager().getByUUID(sharedEmerald.getUuid()), jedis);
+        sharedEmerald.getServerManager().setOffline(sharedEmerald.getServerManager().getByUUID(sharedEmerald.getUuid()));
 
         instance = null;
     }
