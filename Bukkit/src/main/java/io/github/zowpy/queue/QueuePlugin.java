@@ -149,7 +149,6 @@ public final class QueuePlugin extends JavaPlugin {
             queue1.setServer(sharedEmerald.getServerManager().getByConnection(sec.getString("ip"), sec.getInt("port")));
             queue1.setBungeeCordName(sec.getString("bungee"));
             sharedQueue.getQueueManager().getQueues().add(queue1);
-            System.out.println(queue1.getServer() == null);
         }
     }
 }

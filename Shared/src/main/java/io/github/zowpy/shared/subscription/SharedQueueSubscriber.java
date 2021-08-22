@@ -182,7 +182,7 @@ public class SharedQueueSubscriber extends JedisSubscriber {
         if (queuePlayer == null) return;
         sharedQueue.getPlayerManager().getPlayers().remove(uuid, queuePlayer);
         if (queuePlayer.getQueue() == null) return;
-        queuePlayer.getQueue().getPlayers().removeIf(queuePlayer1 -> queuePlayer1.getUuid().equals(uuid));
+        queuePlayer.getQueue().getPlayers().remove(queuePlayer);
 
 
         Queue queue = queuePlayer.getQueue();

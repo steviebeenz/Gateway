@@ -21,7 +21,7 @@ public class Queue {
 
     private String name, bungeeCordName;
     private EmeraldServer server;
-    private PriorityQueue<QueuePlayer> players = new PriorityQueue<>(Comparator.comparingInt(QueuePlayer::getPriority));
+    private PriorityQueue<QueuePlayer> players = new PriorityQueue<>(Comparator.comparingInt(QueuePlayer::getPriority).reversed());
     private boolean paused;
 
     /**

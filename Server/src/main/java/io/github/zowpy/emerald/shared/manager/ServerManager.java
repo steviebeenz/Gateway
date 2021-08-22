@@ -157,6 +157,8 @@ public class ServerManager {
     public void updateServer(EmeraldServer server) {
         Jedis jedis = null;
         try {
+            jedis = emerald.getJedisAPI().getJedisHandler().getJedisPool().getResource();
+
             Map<String, String> data = new HashMap<>();
             data.put("name", server.getName());
             data.put("ip", server.getIp());
@@ -175,6 +177,10 @@ public class ServerManager {
 
         }catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            if (jedis != null) {
+                jedis.close();
+            }
         }
     }
 

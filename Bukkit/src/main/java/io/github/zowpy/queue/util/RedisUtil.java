@@ -40,6 +40,8 @@ public class RedisUtil {
         JsonArray queuesArray = new JsonArray();
 
         for (Queue queue : queues) {
+            if (queue == null) continue;
+            if (queue.getServer() == null) continue;
             JsonChain jc = new JsonChain();
 
             jc.addProperty("name", queue.getName()).addProperty("bungee", queue.getBungeeCordName())
