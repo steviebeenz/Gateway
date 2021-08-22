@@ -61,18 +61,9 @@ public class QueueManager {
      */
 
     public Queue getByPlayer(UUID uuid) {
-        Queue queue = null;
+        QueuePlayer queuePlayer = sharedQueue.getPlayerManager().getByUUID(uuid);
 
-        for (Queue queue1 : queues) {
-            for (QueuePlayer player : queue1.getPlayers()) {
-                if (player.getUuid().equals(uuid)) {
-                    queue = queue1;
-                    break;
-                }
-            }
-        }
-
-        return queue;
+        return queuePlayer == null ? null : queuePlayer.getQueue();
     }
 
 }
