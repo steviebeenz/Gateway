@@ -2,6 +2,8 @@
 # Gateway made by Zowpy
 #
 
+license: "null"
+
 redis:
   host: "gateway"
   port: 6379

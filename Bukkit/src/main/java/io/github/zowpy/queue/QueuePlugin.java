@@ -15,6 +15,7 @@ import io.github.zowpy.queue.task.QueueTask;
 import io.github.zowpy.queue.task.ServerUpdateTask;
 import io.github.zowpy.queue.util.ConfigFile;
 import io.github.zowpy.queue.util.IPUtil;
+import io.github.zowpy.queue.util.PiracyMeta;
 import io.github.zowpy.shared.SharedQueue;
 import io.github.zowpy.shared.queue.Queue;
 import io.github.zowpy.shared.queue.QueueRank;
@@ -52,6 +53,10 @@ public final class QueuePlugin extends JavaPlugin {
         settingsFile = new ConfigFile(this, "settings");
         ranksFile = new ConfigFile(this, "ranks");
         langFile = new ConfigFile(this, "lang");
+
+        if (!new PiracyMeta(this, settingsFile.getConfig().getString("license", "null")).verify()) {
+            getServer().getPluginManager().disablePlugin(this);
+        }
 
         serverProperties = new ServerProperties();
         serverProperties.setServerStatus(getServer().hasWhitelist() ? ServerStatus.WHITELISTED : ServerStatus.ONLINE);
