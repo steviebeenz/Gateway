@@ -33,18 +33,19 @@ public enum Locale {
     Locale(String message, String path) {
         this.message = message;
         this.path = path;
+
+        if (!QueuePlugin.getInstance().getLangFile().getConfig().getString(path).equals(message)) {
+            this.message = QueuePlugin.getInstance().getLangFile().getConfig().getString(path);
+        }
     }
 
     Locale(List<String> messageList, String path) {
         this.messageList = messageList;
         this.path = path;
+
+        if (!QueuePlugin.getInstance().getLangFile().getConfig().getStringList(path).equals(messageList)) {
+            this.messageList = QueuePlugin.getInstance().getLangFile().getConfig().getStringList(path);
+        }
     }
 
-    public List<String> getMessageList() {
-        return QueuePlugin.getInstance().getLangFile().getConfig().getStringList(path);
-    }
-
-    public String getMessage() {
-        return QueuePlugin.getInstance().getLangFile().getConfig().getString(path);
-    }
 }

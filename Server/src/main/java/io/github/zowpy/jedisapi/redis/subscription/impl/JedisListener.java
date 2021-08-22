@@ -28,10 +28,12 @@ public class JedisListener extends JedisPubSub {
     private JedisAPI jedisAPI;
     private JedisHandler jedisHandler;
 
+    private final Executor executor = Executors.newFixedThreadPool(1);
+
     @Override
     public void onMessage(String channel, String message) {
         if (channel.equals(jedisHandler.getCredentials().getChannel())) {
-            Executor executor = Executors.newFixedThreadPool(1);
+
             String[] args = message.split("###");
             executor.execute(() -> {
 

@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class ServerUpdateTask extends BukkitRunnable {
 
     public ServerUpdateTask() {
-        this.runTaskTimerAsynchronously(QueuePlugin.getInstance(), 20L, 20*5L);
+        this.runTaskTimerAsynchronously(QueuePlugin.getInstance(), 0L, 20*5L);
 
     }
 

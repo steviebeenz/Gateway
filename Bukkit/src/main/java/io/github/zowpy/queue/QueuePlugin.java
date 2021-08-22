@@ -19,6 +19,7 @@ import io.github.zowpy.queue.util.PiracyMeta;
 import io.github.zowpy.shared.SharedQueue;
 import io.github.zowpy.shared.queue.Queue;
 import io.github.zowpy.shared.queue.QueueRank;
+import jdk.nashorn.internal.codegen.SpillObjectCreator;
 import lombok.Getter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -39,12 +40,12 @@ public final class QueuePlugin extends JavaPlugin {
     private ConfigFile ranksFile;
     private ConfigFile langFile;
 
-    private Jedis jedis;
-
     private SharedEmerald sharedEmerald;
     private ServerProperties serverProperties;
 
     private SharedQueue sharedQueue;
+
+    private int delay;
 
     @Override
     public void onEnable() {
@@ -54,9 +55,8 @@ public final class QueuePlugin extends JavaPlugin {
         ranksFile = new ConfigFile(this, "ranks");
         langFile = new ConfigFile(this, "lang");
 
-        if (!new PiracyMeta(this, settingsFile.getConfig().getString("license", "null")).verify()) {
-            getServer().getPluginManager().disablePlugin(this);
-        }
+        PiracyMeta piracyMeta = new PiracyMeta(this, settingsFile.getConfig().getString("license", "null"));
+        piracyMeta.verify();
 
         serverProperties = new ServerProperties();
         serverProperties.setServerStatus(getServer().hasWhitelist() ? ServerStatus.WHITELISTED : ServerStatus.ONLINE);
@@ -100,8 +100,6 @@ public final class QueuePlugin extends JavaPlugin {
 
         sharedEmerald.getServerManager().updateServers();
 
-        jedis = sharedEmerald.getJedisAPI().getJedisHandler().getJedisPool().getResource();
-
         new ServerUpdateTask();
 
         JsonObject object = new JsonObject();
@@ -114,7 +112,9 @@ public final class QueuePlugin extends JavaPlugin {
         loadQueues(settingsFile.getConfig().getConfigurationSection("queues"));
         loadRanks(ranksFile.getConfig().getConfigurationSection("ranks"));
 
-        new QueueTask().start();
+        this.delay = settingsFile.getConfig().getInt("queue-interval", 3);
+
+        new QueueTask();
 
         getCommand("joinqueue").setExecutor(new JoinQueueCommand());
         getCommand("leavequeue").setExecutor(new LeaveQueueCommand());
