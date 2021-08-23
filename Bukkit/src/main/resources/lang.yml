@@ -4,12 +4,12 @@
 
 queue-reminder:
   - " "
-  - "&cYou are in &4<queue> &cqueue, you are &4<pos>#&c out of &4<total>#"
+  - "&cYou are in &4<bukkit> &cqueue, you are &4<pos>#&c out of &4<total>#"
   - "&cYou can purchase a rank for a higher priority!"
   - " "
 
-join-queue: "&cYou have been added to &4<queue>"
-left-queue: "&cYou have been removed from &4<queue>"
+join-queue: "&cYou have been added to &4<bukkit>"
+left-queue: "&cYou have been removed from &4<bukkit>"
 send-player: "&cSending you to &4<server>"
 
-pause-queue: "&cYou have <toggle> &4<queue>"
+pause-queue: "&cYou have <toggle> &4<bukkit>"

@@ -8,8 +8,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Server" />
-        <module name="Bukkit" />
         <module name="Shared" />
+        <module name="Bukkit" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
