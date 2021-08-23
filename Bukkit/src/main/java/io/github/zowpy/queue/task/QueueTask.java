@@ -50,13 +50,16 @@ public class QueueTask extends BukkitRunnable {
             if (queue.getServer().getOnlinePlayers().size() >= queue.getServer().getMaxPlayers()) continue;
 
             QueuePlayer queuePlayer = queue.getPlayers().poll();
-               // if (queue.getServer().getStatus() == ServerStatus.WHITELISTED && !queue.getServer().getWhitelistedPlayers().contains(queuePlayer.getUuid())) continue
 
             if (queuePlayer == null) continue;
             if (queuePlayer.getServer().getUuid().equals(queue.getServer().getUuid())) {
                 queue.getPlayers().remove(queuePlayer);
-                    continue;
+                continue;
             }
+
+            if (queue.getServer().getStatus() == ServerStatus.WHITELISTED && !queue.getServer().getWhitelistedPlayers().contains(queuePlayer.getUuid())) continue;
+
+
 
             JsonChain jc = new JsonChain()
                     .addProperty("uuid", queuePlayer.getUuid().toString())
