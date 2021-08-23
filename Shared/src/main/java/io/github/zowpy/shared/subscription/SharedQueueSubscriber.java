@@ -16,6 +16,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This Project is property of Zowpy © 2021
@@ -93,7 +94,7 @@ public class SharedQueueSubscriber extends JedisSubscriber {
 
             queue.setBungeeCordName(object1.get("bungee").getAsString());
             queue.setServer(sharedQueue.getSharedEmerald().getServerManager().getByUUID(UUID.fromString(object1.get("server").getAsString())));
-            PriorityQueue<QueuePlayer> queuePlayers = new PriorityQueue<>(Comparator.comparingInt(QueuePlayer::getPriority));
+            PriorityQueue<QueuePlayer> queuePlayers = new PriorityQueue<>(Comparator.comparingInt(QueuePlayer::getPriority).reversed());
 
             for (JsonElement e1 : object1.get("players").getAsJsonArray()) {
                 JsonObject object2 = e1.getAsJsonObject();
@@ -103,6 +104,7 @@ public class SharedQueueSubscriber extends JedisSubscriber {
 
                 if (queuePlayer == null) {
                     queuePlayer = new QueuePlayer(uuid);
+                    sharedQueue.getPlayerManager().getPlayers().put(uuid, queuePlayer);
                 }
 
                 queuePlayer.setQueue(queue);
@@ -113,7 +115,7 @@ public class SharedQueueSubscriber extends JedisSubscriber {
 
             queue.setPlayers(queuePlayers);
             queue.setPaused(object1.get("paused").getAsBoolean());
-
+            
         }
     }
 
@@ -176,33 +178,24 @@ public class SharedQueueSubscriber extends JedisSubscriber {
     @IncomingMessage(payload = "send")
     public void sendPlayer(JsonObject object) {
         UUID uuid = UUID.fromString(object.get("uuid").getAsString());
-        QueuePlayer queuePlayer = sharedQueue.getPlayerManager().getByUUID(uuid);
-
-
-        if (queuePlayer == null) return;
-        sharedQueue.getPlayerManager().getPlayers().remove(uuid, queuePlayer);
-        if (queuePlayer.getQueue() == null) return;
-        queuePlayer.getQueue().getPlayers().remove(queuePlayer);
-
-
-        Queue queue = queuePlayer.getQueue();
         Player player = Bukkit.getPlayer(uuid);
 
         if (player == null) return;
+
+        sharedQueue.getPlayerManager().getPlayers().remove(uuid);
 
         if (object.has("delay") && object.get("delay").getAsBoolean()) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(sharedQueue.getPlugin(), new Runnable() {
                 @Override
                 public void run() {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', object.get("message").getAsString()));
-                    BungeeUtil.sendPlayer(sharedQueue.getPlugin(), player, queue.getBungeeCordName());
+                    BungeeUtil.sendPlayer(sharedQueue.getPlugin(), player, object.get("server").getAsString());
                 }
             }, 20*3L);
         }else {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', object.get("message").getAsString()));
-            BungeeUtil.sendPlayer(sharedQueue.getPlugin(), player, queue.getBungeeCordName());
+            BungeeUtil.sendPlayer(sharedQueue.getPlugin(), player, object.get("server").getAsString());
         }
-
 
 
     }

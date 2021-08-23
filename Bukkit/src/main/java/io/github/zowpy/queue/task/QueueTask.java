@@ -49,7 +49,7 @@ public class QueueTask extends BukkitRunnable {
             if (queue.getServer().getStatus() == ServerStatus.OFFLINE) continue;
             if (queue.getServer().getOnlinePlayers().size() >= queue.getServer().getMaxPlayers()) continue;
 
-            QueuePlayer queuePlayer = queue.getPlayers().peek();
+            QueuePlayer queuePlayer = queue.getPlayers().poll();
                // if (queue.getServer().getStatus() == ServerStatus.WHITELISTED && !queue.getServer().getWhitelistedPlayers().contains(queuePlayer.getUuid())) continue
 
             if (queuePlayer == null) continue;
@@ -61,6 +61,7 @@ public class QueueTask extends BukkitRunnable {
             JsonChain jc = new JsonChain()
                     .addProperty("uuid", queuePlayer.getUuid().toString())
                     .addProperty("delay", true)
+                    .addProperty("server", queue.getBungeeCordName())
                     .addProperty("message", Locale.SEND_PLAYER.getMessage().replace("<server>", queue.getBungeeCordName()));
 
             QueuePlugin.getInstance().getSharedEmerald().getJedisAPI().getJedisHandler().write("send###" + jc.getAsJsonObject().toString());

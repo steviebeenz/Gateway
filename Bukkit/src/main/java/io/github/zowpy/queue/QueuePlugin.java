@@ -12,6 +12,7 @@ import io.github.zowpy.queue.command.JoinQueueCommand;
 import io.github.zowpy.queue.command.LeaveQueueCommand;
 import io.github.zowpy.queue.command.PauseQueueCommand;
 import io.github.zowpy.queue.task.QueueTask;
+import io.github.zowpy.queue.task.QueueUpdateTask;
 import io.github.zowpy.queue.task.ServerUpdateTask;
 import io.github.zowpy.queue.util.ConfigFile;
 import io.github.zowpy.queue.util.IPUtil;
@@ -114,6 +115,7 @@ public final class QueuePlugin extends JavaPlugin {
 
         this.delay = settingsFile.getConfig().getInt("queue-interval", 3);
 
+        new QueueUpdateTask();
         new QueueTask();
 
         getCommand("joinqueue").setExecutor(new JoinQueueCommand());
@@ -137,8 +139,8 @@ public final class QueuePlugin extends JavaPlugin {
         for (String rank : section.getKeys(false)) {
             ConfigurationSection sec = section.getConfigurationSection(rank);
             QueueRank queueRank = new QueueRank(rank);
-            queueRank.setDefault(sec.get("default") != null && sec.getBoolean("default"));
-            queueRank.setPermission(sec.get("permission") == null ? "" : sec.getString("permission"));
+            queueRank.setDefault(sec.getBoolean("default", false));
+            queueRank.setPermission(sec.getString("permission", ""));
             queueRank.setPriority(sec.getInt("priority", 0));
             sharedQueue.getRankManager().getRanks().add(queueRank);
         }
