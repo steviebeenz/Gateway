@@ -1,9 +1,11 @@
 package io.github.zowpy.queue.command;
 
+import io.github.zowpy.queue.Locale;
 import io.github.zowpy.queue.QueuePlugin;
 import io.github.zowpy.queue.util.RedisUtil;
 import io.github.zowpy.shared.queue.Queue;
 import io.github.zowpy.shared.queue.QueuePlayer;
+import io.github.zowpy.shared.util.BungeeUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -44,6 +46,12 @@ public class JoinQueueCommand implements CommandExecutor {
 
             if (queue == null) {
                 player.sendMessage(ChatColor.RED + "That queue doesn't exist!");
+                return false;
+            }
+
+            if (player.hasPermission("gateway.bypass")) {
+                player.sendMessage(Locale.SEND_PLAYER.getMessage().replace("<server>", queue.getBungeeCordName()));
+                BungeeUtil.sendPlayer(QueuePlugin.getInstance(), player, queue.getBungeeCordName());
                 return false;
             }
 
