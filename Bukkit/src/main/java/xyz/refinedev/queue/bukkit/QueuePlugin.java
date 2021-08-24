@@ -1,6 +1,7 @@
 package xyz.refinedev.queue.bukkit;
 
 import com.google.gson.JsonObject;
+import xyz.refinedev.queue.bukkit.listener.PlayerListener;
 import xyz.refinedev.queue.emerald.shared.SharedEmerald;
 import xyz.refinedev.queue.emerald.shared.server.EmeraldGroup;
 import xyz.refinedev.queue.emerald.shared.server.ServerProperties;
@@ -119,6 +120,7 @@ public final class QueuePlugin extends JavaPlugin {
         getCommand("leavequeue").setExecutor(new LeaveQueueCommand());
         getCommand("pause").setExecutor(new PauseQueueCommand());
 
+        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
     }
