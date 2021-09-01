@@ -43,32 +43,7 @@ public class ServerUpdateTask extends BukkitRunnable {
         serverProperties.setMaxPlayers(Bukkit.getMaxPlayers());
         serverProperties.setTps(TPSUtility.round(Double.parseDouble(TPSUtility.getTPS())));
 
-        JsonObject object = new JsonObject();
-        object.addProperty("uuid", serverProperties.getUuid().toString());
-        object.addProperty("name", serverProperties.getName());
-        object.addProperty("serverStatus", serverProperties.getServerStatus().name());
-        object.addProperty("ip", serverProperties.getIp());
-        object.addProperty("port", serverProperties.getPort());
-        object.addProperty("group", serverProperties.getGroup().getName());
-        object.addProperty("tps", serverProperties.getTps());
-
-        JsonArray whitelistedPlayers = new JsonArray();
-
-        for (UUID uuid : Bukkit.getWhitelistedPlayers().stream().map(OfflinePlayer::getUniqueId).collect(Collectors.toList())) {
-            whitelistedPlayers.add(new JsonPrimitive(uuid.toString()));
-        }
-
-        object.add("whitelistedPlayers", whitelistedPlayers);
-
-        JsonArray onlinePlayers = new JsonArray();
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            onlinePlayers.add(new JsonPrimitive(player.getUniqueId().toString()));
-        }
-
-        object.add("onlinePlayers", onlinePlayers);
-        object.addProperty("maxPlayers", serverProperties.getMaxPlayers());
-
-        QueuePlugin.getInstance().getSharedEmerald().getJedisAPI().getJedisHandler().write("updateserver###" + object.toString());
+        QueuePlugin.getInstance().getSharedEmerald().getServerManager().saveServer(serverProperties);
     }
 
 }

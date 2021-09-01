@@ -3,6 +3,8 @@ package xyz.refinedev.queue.emerald.shared;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import io.github.zowpy.jedisapi.JedisAPI;
+import io.github.zowpy.jedisapi.redis.RedisCredentials;
 import xyz.refinedev.queue.emerald.shared.server.EmeraldServer;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,8 +12,6 @@ import xyz.refinedev.queue.emerald.shared.jedis.SharedJedisSubscriber;
 import xyz.refinedev.queue.emerald.shared.manager.GroupManager;
 import xyz.refinedev.queue.emerald.shared.manager.ServerManager;
 import xyz.refinedev.queue.emerald.shared.server.ServerProperties;
-import xyz.refinedev.queue.jedisapi.JedisAPI;
-import xyz.refinedev.queue.jedisapi.redis.RedisCredentials;
 
 import java.util.UUID;
 

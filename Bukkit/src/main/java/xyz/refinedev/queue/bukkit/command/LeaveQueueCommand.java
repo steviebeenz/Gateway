@@ -30,7 +30,7 @@ public class LeaveQueueCommand implements CommandExecutor {
             Queue queue = QueuePlugin.getInstance().getSharedQueue().getQueueManager().getByPlayer(player.getUniqueId());
 
             if (queue == null) {
-                player.sendMessage(ChatColor.RED + "You are not in a bukkit!");
+                player.sendMessage(ChatColor.RED + "You are not in a queue!");
                 return false;
             }
 

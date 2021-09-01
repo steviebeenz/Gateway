@@ -1,7 +1,6 @@
 package xyz.refinedev.queue.emerald.shared.server;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Server;
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * This Project is property of RefineDevelopment © 2021

@@ -1,0 +1,4 @@
+name: Gateway-Proxy
+version: '1.0'
+main: xyz.refinedev.queue.proxy.ProxyQueue
+author: "Zowpy"

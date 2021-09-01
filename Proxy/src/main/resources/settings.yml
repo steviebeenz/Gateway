@@ -1,0 +1,20 @@
+#
+# Gateway made by Zowpy
+#
+
+license: "null"
+
+redis:
+  host: "gateway"
+  port: 6379
+  auth:
+    enabled: true
+    password: "admin"
+
+
+queues:
+  practice:
+    paused: false
+    ip: 127.0.0.1
+    port: 25565
+    bungee: "practice"

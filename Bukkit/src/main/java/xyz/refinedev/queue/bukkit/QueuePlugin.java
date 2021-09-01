@@ -1,30 +1,25 @@
 package xyz.refinedev.queue.bukkit;
 
 import com.google.gson.JsonObject;
-import xyz.refinedev.queue.bukkit.listener.PlayerListener;
+import io.github.zowpy.jedisapi.redis.RedisCredentials;
+import lombok.Getter;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Entity;
+import org.bukkit.plugin.java.JavaPlugin;
+import xyz.refinedev.queue.bukkit.command.JoinQueueCommand;
+import xyz.refinedev.queue.bukkit.command.LeaveQueueCommand;
+import xyz.refinedev.queue.bukkit.command.PauseQueueCommand;
+import xyz.refinedev.queue.bukkit.task.QueueTask;
+import xyz.refinedev.queue.bukkit.task.ServerUpdateTask;
+import xyz.refinedev.queue.bukkit.util.ConfigFile;
+import xyz.refinedev.queue.bukkit.util.IPUtil;
+import xyz.refinedev.queue.bukkit.util.PiracyMeta;
 import xyz.refinedev.queue.emerald.shared.SharedEmerald;
 import xyz.refinedev.queue.emerald.shared.server.EmeraldGroup;
 import xyz.refinedev.queue.emerald.shared.server.ServerProperties;
 import xyz.refinedev.queue.emerald.shared.server.ServerStatus;
 import xyz.refinedev.queue.emerald.shared.util.TPSUtility;
-import xyz.refinedev.queue.jedisapi.redis.RedisCredentials;
-import xyz.refinedev.queue.bukkit.command.JoinQueueCommand;
-import xyz.refinedev.queue.bukkit.command.LeaveQueueCommand;
-import xyz.refinedev.queue.bukkit.command.PauseQueueCommand;
-import xyz.refinedev.queue.bukkit.task.QueueTask;
-import xyz.refinedev.queue.bukkit.task.QueueUpdateTask;
-import xyz.refinedev.queue.bukkit.task.ServerUpdateTask;
-import xyz.refinedev.queue.bukkit.util.ConfigFile;
-import xyz.refinedev.queue.bukkit.util.IPUtil;
-import xyz.refinedev.queue.bukkit.util.PiracyMeta;
 import xyz.refinedev.queue.shared.SharedQueue;
-import xyz.refinedev.queue.shared.queue.Queue;
-import xyz.refinedev.queue.shared.queue.QueueRank;
-import lombok.Getter;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -36,7 +31,6 @@ public final class QueuePlugin extends JavaPlugin {
     private static QueuePlugin instance;
 
     private ConfigFile settingsFile;
-    private ConfigFile ranksFile;
     private ConfigFile langFile;
 
     private SharedEmerald sharedEmerald;
@@ -51,11 +45,9 @@ public final class QueuePlugin extends JavaPlugin {
         instance = this;
 
         settingsFile = new ConfigFile(this, "settings");
-        ranksFile = new ConfigFile(this, "ranks");
         langFile = new ConfigFile(this, "lang");
 
-        PiracyMeta piracyMeta = new PiracyMeta(this, settingsFile.getConfig().getString("license", "null"));
-        piracyMeta.verify();
+        new PiracyMeta(this, settingsFile.getConfig().getString("license", "null")).verify();
 
         serverProperties = new ServerProperties();
         serverProperties.setServerStatus(getServer().hasWhitelist() ? ServerStatus.WHITELISTED : ServerStatus.ONLINE);
@@ -95,66 +87,34 @@ public final class QueuePlugin extends JavaPlugin {
 
         sharedEmerald.setServerProperties(serverProperties);
         /*  Create the current server to redis cache  */
-        sharedEmerald.getServerManager().createServer();
-
-        sharedEmerald.getServerManager().updateServers();
+        sharedEmerald.getServerManager().saveServer(serverProperties);
 
         new ServerUpdateTask();
 
         JsonObject object = new JsonObject();
         object.addProperty("name", serverProperties.getName());
 
-        sharedEmerald.getJedisAPI().getJedisHandler().write("start###"+ object.toString());
+       // sharedEmerald.getJedisAPI().getJedisHandler().write("start###"+ object.toString());
 
-        sharedQueue = new SharedQueue(this, sharedEmerald);
+        sharedQueue = new SharedQueue(this, sharedEmerald.getJedisAPI().getCredentials(), sharedEmerald);
 
-        loadQueues(settingsFile.getConfig().getConfigurationSection("queues"));
-        loadRanks(ranksFile.getConfig().getConfigurationSection("ranks"));
+        this.delay = settingsFile.getConfig().getInt("queue-interval", 3);
 
-        this.delay = settingsFile.getConfig().getInt("bukkit-interval", 3);
-
-        new QueueUpdateTask();
         new QueueTask();
 
         getCommand("joinqueue").setExecutor(new JoinQueueCommand());
         getCommand("leavequeue").setExecutor(new LeaveQueueCommand());
         getCommand("pause").setExecutor(new PauseQueueCommand());
 
-        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
     }
 
     @Override
     public void onDisable() {
-        sharedEmerald.getServerManager().setOffline(sharedEmerald.getServerManager().getByUUID(sharedEmerald.getUuid()));
+        serverProperties.setServerStatus(ServerStatus.OFFLINE);
+        sharedEmerald.getServerManager().saveServer(serverProperties);
 
         instance = null;
-    }
-
-    private void loadRanks(ConfigurationSection section) {
-        if (section == null || section.getKeys(false) == null) return;
-
-        for (String rank : section.getKeys(false)) {
-            ConfigurationSection sec = section.getConfigurationSection(rank);
-            QueueRank queueRank = new QueueRank(rank);
-            queueRank.setDefault(sec.getBoolean("default", false));
-            queueRank.setPermission(sec.getString("permission", ""));
-            queueRank.setPriority(sec.getInt("priority", 0));
-            sharedQueue.getRankManager().getRanks().add(queueRank);
-        }
-    }
-
-    private void loadQueues(ConfigurationSection section) {
-        if (section == null || section.getKeys(false) == null) return;
-
-        for (String queue : section.getKeys(false)) {
-            ConfigurationSection sec = section.getConfigurationSection(queue);
-            Queue queue1 = new Queue(queue);
-            queue1.setPaused(sec.getBoolean("paused"));
-            queue1.setServer(sharedEmerald.getServerManager().getByConnection(sec.getString("ip"), sec.getInt("port")));
-            queue1.setBungeeCordName(sec.getString("bungee"));
-            sharedQueue.getQueueManager().getQueues().add(queue1);
-        }
     }
 }

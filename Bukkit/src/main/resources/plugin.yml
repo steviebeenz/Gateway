@@ -1,6 +1,6 @@
 name: Gateway
-version: ${project.version}
-main: xyz.refinedev.bukkit.QueuePlugin
+version: 1.0
+main: xyz.refinedev.queue.bukkit.QueuePlugin
 authors: [Zowpy]
 commands:
   joinqueue:
@@ -8,17 +8,17 @@ commands:
       - jq
       - jqueue
       - joinq
-    description: "Join a bukkit"
+    description: "Join a queue"
   leavequeue:
     aliases:
       - lq
       - lqueue
       - leaveq
-    description: "Leave your current bukkit"
+    description: "Leave your current queue"
   pause:
     aliases:
       - pausequeue
       - pq
       - pauseq
       - pqueue
-    description: "Pauses/Resumes a specific bukkit"
+    description: "Pauses/Resumes a specific queue"

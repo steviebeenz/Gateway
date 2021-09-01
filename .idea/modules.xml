@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Bukkit/Bukkit.iml" filepath="$PROJECT_DIR$/Bukkit/Bukkit.iml" />
       <module fileurl="file://$PROJECT_DIR$/Gateway.iml" filepath="$PROJECT_DIR$/Gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Proxy/Proxy.iml" filepath="$PROJECT_DIR$/Proxy/Proxy.iml" />
       <module fileurl="file://$PROJECT_DIR$/Server/Server.iml" filepath="$PROJECT_DIR$/Server/Server.iml" />
       <module fileurl="file://$PROJECT_DIR$/Shared/Shared.iml" filepath="$PROJECT_DIR$/Shared/Shared.iml" />
     </modules>

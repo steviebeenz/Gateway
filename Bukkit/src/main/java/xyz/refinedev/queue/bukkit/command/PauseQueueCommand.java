@@ -9,6 +9,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import xyz.refinedev.queue.shared.queue.QueuePlayer;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * This Project is property of RefineDevelopment © 2021
@@ -32,19 +35,21 @@ public class PauseQueueCommand implements CommandExecutor {
         }
 
         if (args.length != 1) {
-            sender.sendMessage(ChatColor.RED + "Invalid usage! /" + label + " <bukkit>");
+            sender.sendMessage(ChatColor.RED + "Invalid usage! /" + label + " <queue>");
             return true;
         }
 
-        Queue queue = QueuePlugin.getInstance().getSharedQueue().getQueueManager().getByName(args[0]);
+        CompletableFuture<Queue> queue = QueuePlugin.getInstance().getSharedQueue().getQueueManager().getByName(args[0]);
+        queue.thenAccept(queue1 -> {
+            if (queue1 == null) {
+                sender.sendMessage(ChatColor.RED + "That queue doesn't exist!");
+                return;
+            }
 
-        if (queue == null) {
-            sender.sendMessage(ChatColor.RED + "That bukkit doesn't exist!");
-            return true;
-        }
-
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', Locale.PAUSE_QUEUE.getMessage().replace("<toggle>", queue.isPaused() ? "resumed" : "paused").replace("<bukkit>", queue.getName())));
-        RedisUtil.pauseQueue(queue);
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', Locale.PAUSE_QUEUE.getMessage().replace("<toggle>", queue1.isPaused() ? "resumed" : "paused").replace("<queue>", queue1.getName())));
+            queue1.setPaused(!queue1.isPaused());
+            QueuePlugin.getInstance().getSharedQueue().getQueueManager().saveQueue(queue1);
+        });
 
         return false;
     }

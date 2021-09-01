@@ -11,6 +11,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 /**
  * This Project is property of RefineDevelopment © 2021
  * Redistribution of this Project is not allowed
@@ -29,48 +32,52 @@ public class QueueTask extends BukkitRunnable {
     @Override
     public void run() {
 
-        for (Queue queue : QueuePlugin.getInstance().getSharedQueue().getQueueManager().getQueues()) {
-            if (queue.getPlayers().isEmpty()) continue;
+        CompletableFuture<List<Queue>> list = QueuePlugin.getInstance().getSharedQueue().getQueueManager().getAsList();
+
+        list.thenAccept(queues -> {
+            for (Queue queue : queues) {
+                if (queue.getPlayers().isEmpty()) continue;
 
 
-            for (QueuePlayer queuePlayer : queue.getPlayers()) {
-                Player player = Bukkit.getPlayer(queuePlayer.getUuid());
+                for (QueuePlayer queuePlayer : queue.getPlayers()) {
+                    Player player = Bukkit.getPlayer(queuePlayer.getUuid());
 
-                if (player != null) {
-                    for (String s : Locale.QUEUE_REMINDER.getMessageList()) {
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', s.replace("<pos>", queue.getPosition(queuePlayer) + "").replace("<total>", queue.getPlayers().size() + "")
-                                .replace("<bukkit>", queue.getName())));
+                    if (player != null) {
+                        for (String s : Locale.QUEUE_REMINDER.getMessageList()) {
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', s.replace("<pos>", queue.getPosition(queuePlayer) + "").replace("<total>", queue.getPlayers().size() + "")
+                                    .replace("<queue>", queue.getName())));
+                        }
                     }
                 }
+
+                if (queue.isPaused()) continue;
+                if (queue.getServer() == null) continue;
+                if (queue.getServer().getServerStatus() == ServerStatus.OFFLINE) continue;
+                if (queue.getServer().getOnlinePlayers().size() >= queue.getServer().getMaxPlayers()) continue;
+
+                QueuePlayer queuePlayer = queue.getPlayers().poll();
+
+                if (queuePlayer == null) continue;
+                if (queuePlayer.getServer().getUuid().equals(queue.getServer().getUuid())) {
+                    queue.getPlayers().remove(queuePlayer);
+                    continue;
+                }
+
+                if (queue.getServer().getServerStatus() == ServerStatus.WHITELISTED && !queue.getServer().getWhitelistedPlayers().contains(queuePlayer.getUuid())) continue;
+
+                QueuePlugin.getInstance().getSharedQueue().getQueueManager().saveQueue(queue);
+
+
+                JsonChain jc = new JsonChain()
+                        .addProperty("uuid", queuePlayer.getUuid().toString())
+                        .addProperty("delay", true)
+                        .addProperty("server", queue.getBungeeCordName())
+                        .addProperty("message", Locale.SEND_PLAYER.getMessage().replace("<server>", queue.getBungeeCordName()));
+
+                QueuePlugin.getInstance().getSharedEmerald().getJedisAPI().getJedisHandler().write("send###" + jc.getAsJsonObject().toString());
+
             }
-
-            if (queue.isPaused()) continue;
-            if (queue.getServer() == null) continue;
-            if (queue.getServer().getStatus() == ServerStatus.OFFLINE) continue;
-            if (queue.getServer().getOnlinePlayers().size() >= queue.getServer().getMaxPlayers()) continue;
-
-            QueuePlayer queuePlayer = queue.getPlayers().poll();
-
-            if (queuePlayer == null) continue;
-            if (queuePlayer.getServer().getUuid().equals(queue.getServer().getUuid())) {
-                queue.getPlayers().remove(queuePlayer);
-                continue;
-            }
-
-            if (queue.getServer().getStatus() == ServerStatus.WHITELISTED && !queue.getServer().getWhitelistedPlayers().contains(queuePlayer.getUuid())) continue;
-
-
-
-            JsonChain jc = new JsonChain()
-                    .addProperty("uuid", queuePlayer.getUuid().toString())
-                    .addProperty("delay", true)
-                    .addProperty("server", queue.getBungeeCordName())
-                    .addProperty("message", Locale.SEND_PLAYER.getMessage().replace("<server>", queue.getBungeeCordName()));
-
-            QueuePlugin.getInstance().getSharedEmerald().getJedisAPI().getJedisHandler().write("send###" + jc.getAsJsonObject().toString());
-
-            }
-
+        });
 
 
 

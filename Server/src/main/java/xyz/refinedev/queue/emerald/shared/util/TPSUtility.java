@@ -34,7 +34,7 @@ public class TPSUtility {
     }
 
     public static String getTPS() {
-        return format.format(round(getRecentTps()[1]));
+        return format.format(round(getRecentTps()[0]));
     }
 
     public static double round(double tps) {

@@ -1,11 +1,14 @@
 package xyz.refinedev.queue.bukkit.util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.NetworkInterface;
@@ -32,138 +35,96 @@ import java.util.regex.Pattern;
 
 public class PiracyMeta {
 
-    private final String server = "http://backend.refinedev.xyz:8080/api/client";
     private final String authorization = "ee3272d7caa7b8e917a6c17fa02610ce2cc1d4da";
 
-    private final Plugin plugin;
+    private final JavaPlugin plugin;
     private final String productKey;
 
     private static final String UNKNOWN = "unknown";
     private static final String OS = System.getProperty("os.name").toLowerCase();
 
-    public PiracyMeta(Plugin plugin, String productKey) {
-        this.plugin = plugin;
-        this.productKey = productKey;
+    public PiracyMeta(JavaPlugin plugin, String productKey) {
+        this.plugin=plugin;
+        this.productKey=productKey;
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::hiddenVerify, 20, parseTime("60m"));
+        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new PiracyTask(), 20L, parseTime("60m"));
     }
 
-    public boolean verify() {
-        System.out.println("---------------[" + plugin + "-License]----------------");
-        System.out.println("Verifying your license...");
-        System.out.println(" ");
+    public void verify() {
+        this.consoleLog("&7---------------&8[&cRefine-Licenses&8]&7----------------");
+        this.consoleLog("&7Verifying your license...");
+        this.consoleLog(" ");
         String[] respo = isValid();
         if (respo[0].equals("2") && Boolean.parseBoolean(respo[3])) {
-            System.out.println("License valid!");
-            System.out.println("Response: " + respo[2]);
-            System.out.println(" ");
-            System.out.println("Discord: https://dsc.gg/refine");
-            System.out.println("Twitter: https://twitter.com/RefineDev");
-            System.out.println("Contact: refinedevelopment@gmail.com");
-            System.out.println("---------------[" + plugin + "-License]----------------");
-            //Essentials.setOutdated(false);
-            return Boolean.parseBoolean(respo[3]);
+            this.consoleLog("&aLicense valid!");
+            this.consoleLog("&7Response: &a" + respo[2]);
+            this.consoleLog(" ");
+            this.consoleLog("&7Discord: &chttps://dsc.gg/refine");
+            this.consoleLog("&7Twitter: &chttps://twitter.com/RefineDev");
+            this.consoleLog("&7Contact: &crefinedevelopment@gmail.com");
+            this.consoleLog("&7---------------&8[&cRefine-Licenses&8]&7----------------");
+            //plugin.getConfigHandler().setOUTDATED(false);
+            //plugin.getConfigHandler().setupEssentials();
         } else if (respo[0].equals("3") && Boolean.parseBoolean(respo[3])) {
-            System.out.println("License valid!");
-            System.out.println("By using this plugin you agree to our TOS!");
-            System.out.println(" ");
-            System.out.println("VERSION OUTDATED");
-            System.out.println("Your version: " + plugin.getDescription().getVersion());
-            System.out.println("Latest version: " + respo[1].split("#")[1]);
-            System.out.println(" ");
-            System.out.println("Discord: https://dsc.gg/refine");
-            System.out.println("Twitter: https://twitter.com/RefineDev");
-            System.out.println("Contact: refinedevelopment@gmail.com");
-            System.out.println("---------------[" + plugin + "-License&8]----------------");
-            //Essentials.setOutdated(true);
-            //Essentials.setNewVersion(respo[1].split("#")[1]);
-            return Boolean.parseBoolean(respo[3]);
+            this.consoleLog("&aLicense valid!");
+            this.consoleLog("&7Response: &a" + respo[2]);
+            this.consoleLog(" ");
+            this.consoleLog("&eVERSION OUTDATED");
+            this.consoleLog("&eYour version: &f" + plugin.getDescription().getVersion());
+            this.consoleLog("&aLatest version: &f" + respo[1].split("#")[1]);
+            this.consoleLog(" ");
+            this.consoleLog("&7Discord: &chttps://dsc.gg/refine");
+            this.consoleLog("&7Twitter: &chttps://twitter.com/RefineDev");
+            this.consoleLog("&7Contact: &crefinedevelopment@gmail.com");
+            this.consoleLog("&7---------------&8[&cRefine-Licenses&8]&7----------------");
+            //plugin.getConfigHandler().setOUTDATED(true);
+            //plugin.getConfigHandler().setNEW_VERSION(respo[1].split("#")[1]);
+            //plugin.getConfigHandler().setupEssentials();
         } else {
-            System.out.println("&cLicense is not valid!");
-            System.out.println("&fReason: &c" + respo[1]);
-            System.out.println(" ");
-            System.out.println("Discord: https://dsc.gg/refine");
-            System.out.println("Twitter: https://twitter.com/RefineDev");
-            System.out.println("Contact: refinedevelopment@gmail.com");
-            System.out.println("---------------[" + plugin + "-License&8]----------------");
+            this.consoleLog("&cLicense is not valid!");
+            this.consoleLog("&7Reason: &c" + respo[1]);
+            this.consoleLog(" ");
+            this.consoleLog("&7Discord: &chttps://dsc.gg/refine");
+            this.consoleLog("&7Twitter: &chttps://twitter.com/RefineDev");
+            this.consoleLog("&7Contact: &crefinedevelopment@gmail.com");
+            this.consoleLog("&7---------------&8[&cRefine-Licenses&8]&7----------------");
+            System.exit(0);
             Bukkit.shutdown();
-            return Boolean.parseBoolean(respo[3]);
         }
     }
 
     public void hiddenVerify() {
-        System.out.println("---------------[" + plugin + "-License]----------------");
-        System.out.println("Verifying your license...");
-        System.out.println(" ");
         String[] respo = isValid();
         if (respo[0].equals("3") && Boolean.parseBoolean(respo[3])) {
-            System.out.println("VERSION OUTDATED");
-            System.out.println("Your version: " + plugin.getDescription().getVersion());
-            System.out.println("Latest version: " + respo[1].split("#")[1]);
-            System.out.println(" ");
-            //Essentials.setOutdated(true);
-            //Essentials.setNewVersion(respo[1].split("#")[1]);
-        } else {
-            System.out.println("[" + plugin.getName() + "] Could not verify your License, Shutting Down Server in 10 Seconds");
-            System.out.println("[" + plugin.getName() + "] Could not verify your License, Shutting Down Server in 10 Seconds");
-            System.out.println("[" + plugin.getName() + "] Could not verify your License, Shutting Down Server in 10 Seconds");
-            System.out.println("[" + plugin.getName() + "] Could not verify your License, Shutting Down Server in 10 Seconds");
-            System.out.println("[" + plugin.getName() + "] Could not verify your License, Shutting Down Server in 10 Seconds");
-
-            for ( int t = 0; t < 5; t++) {
-                Bukkit.getOnlinePlayers().forEach(player -> {
-                    if (player.isOp()) {
-                        player.sendMessage("[Gateway] Could not verify your License, Shutting Down Server in 10 Seconds");
-                    }
-                });
-            }
-            Bukkit.getScheduler().runTaskLater(plugin, Bukkit::shutdown, 200L);
+            this.consoleLog("&eVERSION OUTDATED");
+            this.consoleLog("&eYour version: &f" + plugin.getDescription().getVersion());
+            this.consoleLog("&aLatest version: &f" + respo[1].split("#")[1]);
+            //plugin.getConfigHandler().setOUTDATED(true);
+            //plugin.getConfigHandler().setNEW_VERSION(respo[1].split("#")[1]);
+        } else if (!respo[0].equals("2") && !Boolean.parseBoolean(respo[3])) {
+            this.consoleLog("&cCould not verify your License, Shutting Down Server in 10 Seconds");
+            Bukkit.getOnlinePlayers().forEach(player -> {
+                if (player.isOp()) {
+                    player.sendMessage("[" + plugin.getName() + "] &cCould not verify your License, Shutting Down Server in 10 Seconds");
+                }
+            });
+            Bukkit.getScheduler().runTaskLater(plugin, Bukkit::shutdown, 10 * 20L);
         }
     }
 
-    private String requestServer(String productKey) throws IOException {
-        URL url = new URL(server);
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        con.setRequestProperty("User-Agent", "uLicense");
-        con.setDoInput(true);
-        con.setDoOutput(true);
-        con.setUseCaches(false);
-
-        String outString = "{\"hwid\":\"password\",\"licensekey\":\"avain\",\"product\":\"NiceCar\",\"version\":\"dogpoop\"}";
-        //Align HWID again here if someone tries to spoof it
-        outString = outString
-                .replaceAll("password", getHWID())
-                .replaceAll("avain", productKey)
-                .replaceAll("NiceCar", plugin.getName())
-                .replaceAll("dogpoop", plugin.getDescription().getVersion());
-
-        byte[] out = outString.getBytes(StandardCharsets.UTF_8);
-
-        con.setRequestProperty("Authorization", this.authorization);
-        con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-        con.connect();
-
-        try(OutputStream os = con.getOutputStream()) {
-            os.write(out);
-        }
-
-        if(!url.getHost().equals(con.getURL().getHost())) return "successful_authentication";
-
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-            String inputLine;
-            StringBuilder response = new StringBuilder();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-
-            return response.toString();
+    private class PiracyTask implements Runnable {
+        @Override
+        public void run() {
+            hiddenVerify();
         }
     }
 
-    /*private String requestServerHTTPS(String productKey) throws IOException {
-        URL url = new URL(server);
+    public void consoleLog(String string) {
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "[" + plugin.getName() + "] " + string));
+    }
+
+    private String requestServerHTTPS(String productKey) throws IOException {
+        URL url = new URL("https://backend.refinedev.xyz/api/client");
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("User-Agent", "uLicense");
@@ -202,11 +163,11 @@ public class PiracyMeta {
 
             return response.toString();
         }
-    }*/
+    }
 
     public String[] isValid() {
         try {
-            String response = requestServer(productKey);
+            String response = requestServerHTTPS(productKey);
 
             if(!response.contains("{")) {
                 return new String[]{"1", "ODD_RESULT", "420"};
@@ -244,7 +205,7 @@ public class PiracyMeta {
                 long t = Long.parseLong(unix);
                 long hashT = Long.parseLong(aa[1]);
 
-                if(Math.abs(t - hashT) > 1) {
+                if (Math.abs(t - hashT) > 1) {
                     return new String[]{"1", "FAILED_AUTHENTICATION", statusCode, String.valueOf(false)};
                 }
             }
@@ -335,7 +296,7 @@ public class PiracyMeta {
     }
 
     private static boolean isLinux() {
-        return (OS.contains("inux"));
+        return (OS.contains("linux"));
     }
 
     private static String getLinuxMacAddress() throws FileNotFoundException, NoSuchAlgorithmException {

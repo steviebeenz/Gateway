@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="Proxy" />
         <module name="Server" />
         <module name="Shared" />
         <module name="Bukkit" />
@@ -14,6 +15,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="Bukkit" target="1.8" />
+      <module name="Proxy" target="1.8" />
       <module name="Server" target="8" />
       <module name="Shared" target="8" />
     </bytecodeTargetLevel>

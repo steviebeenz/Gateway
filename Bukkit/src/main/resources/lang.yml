@@ -8,8 +8,8 @@ queue-reminder:
   - "&cYou can purchase a rank for a higher priority!"
   - " "
 
-join-queue: "&cYou have been added to &4<bukkit>"
-left-queue: "&cYou have been removed from &4<bukkit>"
+join-queue: "&cYou have been added to &4<queue>"
+left-queue: "&cYou have been removed from &4<queue>"
 send-player: "&cSending you to &4<server>"
 
-pause-queue: "&cYou have <toggle> &4<bukkit>"
+pause-queue: "&cYou have <toggle> &4<queue>"
