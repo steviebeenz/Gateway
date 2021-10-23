@@ -5,7 +5,7 @@
 
 </small></i>
 
-![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-in--memory%20data%20structure-red?style=flat-square)
 
 </div>
 
