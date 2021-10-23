@@ -35,8 +35,6 @@ public final class ProxyQueue extends Plugin {
         settingsFile = new ConfigFile(this, "settings");
         ranksFile = new ConfigFile(this, "ranks");
 
-        new PiracyMeta(this, settingsFile.getConfig().getString("license", "null")).verify();
-
         sharedEmerald = new SharedEmerald(null, new RedisCredentials(
                 settingsFile.getConfig().getString("redis.host"),
                 settingsFile.getConfig().getString("redis.auth.password"),

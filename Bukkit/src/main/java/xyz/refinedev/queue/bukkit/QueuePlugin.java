@@ -47,8 +47,6 @@ public final class QueuePlugin extends JavaPlugin {
         settingsFile = new ConfigFile(this, "settings");
         langFile = new ConfigFile(this, "lang");
 
-        new PiracyMeta(this, settingsFile.getConfig().getString("license", "null")).verify();
-
         serverProperties = new ServerProperties();
         serverProperties.setServerStatus(getServer().hasWhitelist() ? ServerStatus.WHITELISTED : ServerStatus.ONLINE);
         serverProperties.setIp(IPUtil.getIP());
