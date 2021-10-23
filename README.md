@@ -21,7 +21,7 @@
 - [Twitter](https://twitter.com/RefineDev)
 
 ## Note
-This might contain bugs that are relatively eeasy to fix.
+This might contain bugs that are relatively easy to fix.
 
 ## Terms of Use
 + You are not allowed to sell, claim this as your own. Resepect the developer for his contributions and credit them.
